@@ -1,0 +1,155 @@
+===================================================================================
+SUB-BLOCO 2: PONTE SPI SLAVE PARA WISHBONE MASTER COM MOTOR CRC8-CCITT
+Modulo Topo: spi_wb_bridge
+Caminho: frontend/spi_slave_wb_bridge/
+===================================================================================
+
+1. VISAO GERAL E ARQUITETURA DO SUB-BLOCO
+-----------------------------------------------------------------------------------
+O Sub-bloco 2 consiste em uma ponte digital que opera externamente como um escravo
+SPI (SPI Slave, operando ate 1 MHz) e internamente como um mestre no barramento padrao
+Wishbone (Wishbone Master, operando em >= 100 MHz). Ele e responsavel por receber os
+comandos da interface serial, validar a integridade de dados via CRC8-CCITT e traduzi-los
+em ciclos de leitura/escrita no barramento Wishbone que acessa o Banco de Registos do ADC.
+
+Ele e composto internamente pelos seguintes modulos SystemVerilog:
+  * spi_wb_bridge.sv: Topo integrador da ponte.
+  * spi_slave_core.sv: Camada fisica SPI e maquina de estados (FSM). Gerencia a recepcao
+    serial, deserializacao/serializacao, travessia de dominio de relogio (CDC), 
+    suporte aos 4 modos CPOL/CPHA, bit_order e controle dos sinais spi_busy e miso.
+  * spi_crc8_ccitt.sv: Motor combinacional de calculo do polinomio CRC8-CCITT 
+    (x^8 + x^2 + x + 1 = 0x07, valor inicial 0x00).
+  * wb_master_ctrl.sv: Controlador Wishbone Master com suporte a auto-incremento de
+    endereco (+1) para operacoes continuas em modo burst.
+  * spi_wb_reset_sync.sv: Sincronizadores dedicados de reset para reset_s e rst_sys.
+
+
+2. ESPECIFICACAO DAS FUNCIONALIDADES E INTERFACES
+-----------------------------------------------------------------------------------
+A. Relogios e Dominios de Reset:
+   - clk: Relogio principal do sistema e Wishbone (>= 100 MHz).
+   - sck: Relogio serial fornecido pelo mestre SPI externo (<= 1 MHz). A relacao de 
+     frequencia (>= 100:1) assegura ampla margem temporal para sincronizacao CDC (2 FFs),
+     leitura no barramento Wishbone e calculo de CRC antes da borda de saida em miso.
+   - reset_s: Reset dedicado da logica SPI (ativo em nivel baixo '0', com ativacao 
+     assincrona e desativacao sincronizada com clk).
+   - rst_sys: Reset dedicado do barramento/sistema (ativo em nivel baixo '0').
+
+B. Interface Serial SPI Slave:
+   - ss: Slave Select (ativo em nivel baixo '0'). A ponte so transaciona enquanto ss = 0.
+   - sck: Relogio serial SPI.
+   - mosi: Master-Out Slave-In (dados e comandos recebidos do mestre).
+   - miso: Master-In Slave-Out (dados e CRCs lidos e enviados ao mestre; mantido em '0'
+     durante a fase de cabecalho e durante operacoes de escrita).
+   - spi_busy: Flag de ocupacao (ativo em nivel baixo: '0' enquanto a transacao esta em
+     andamento; '1' quando a ponte esta ociosa/pronta).
+   - cpol: Polaridade do relogio sck em estado ocioso ('0' ou '1').
+   - cpha: Fase de amostragem/lancamento dos dados no sck ('0' ou '1').
+   - bit_order: Ordem dos bits ('0': LSB first; '1': MSB first).
+
+C. Interface com o Barramento Wishbone (Master):
+   - wb_adr_o[11:0]: Endereco Wishbone de destino gerado pela ponte.
+   - wb_dat_o[15:0]: Dados de escrita a serem gravados no escravo.
+   - wb_dat_i[15:0]: Dados lidos retornados pelo escravo Wishbone.
+   - wb_sel_o[1:0]: Selecao de bytes (fixo em 2'b11 para palavras de 16 bits).
+   - wb_we_o: Write Enable ('1' = escrita, '0' = leitura).
+   - wb_stb_o: Strobe de ciclo valido.
+   - wb_cyc_o: Cycle valid da transacao.
+   - wb_ack_i: Acknowledge de confirmacao retornado pelo escravo.
+   - crc_err: Pulso/flag indicando divergencia (mismatch) de CRC8-CCITT.
+
+D. Estrutura dos Pacotes e Parametrizacao de CRC:
+   - O parametro CRC_HEADER_EN permite alternar entre as opcoes da especificacao:
+     * CRC_HEADER_EN = 0 (Opcao B - Secao 6.3.4):
+       Cabecalho (13 bits): [1b Comando: '0'=Write, '1'=Read] + [12b Endereco]
+       Pacote de Dados (24 bits): [16b Dados] + [8b CRC8-CCITT]
+     * CRC_HEADER_EN = 1 (Opcao A - Secao 6.3.3.14):
+       Cabecalho (21 bits): [1b Comando] + [12b Endereco] + [8b CRC do Cabecalho]
+       Pacote de Dados (24 bits): [16b Dados] + [8b CRC8-CCITT]
+
+E. Mecanismo de Protecao por CRC e Auto-Incremento em Burst:
+   - Na Escrita: A FSM calcula o CRC dos 16 bits de dados recebidos e compara com o byte
+     de CRC enviado pelo mestre. Se baterem, dispara a transacao Wishbone. Se houver
+     erro, a escrita no barramento e bloqueada, preservando os registos, e crc_err e gerado.
+   - No Burst: Mantendo ss = 0, a cada pacote de dados validado, o endereco e incrementado
+     em +1, permitindo preencher ou ler sequencias de registos de forma contínua.
+
+
+3. TESTES IMPLEMENTADOS NO TESTBENCH (spi_wb_bridge_tb.sv)
+-----------------------------------------------------------------------------------
+Localizacao do Testbench: frontend/spi_slave_wb_bridge/rtl/tb/spi_wb_bridge_tb.sv
+Como executar a simulacao:
+  cd frontend/spi_slave_wb_bridge/workspace/rtlsim
+  python run.py
+
+O testbench simula a ponte conectada a um modelo de memoria Wishbone e executa 8 baterias
+de testes rigorosas cobrindo todos os requisitos contratuais ("Shall") da especificacao:
+
+[TESTE 1] Escrita e Leitura Simples (Single Transfer):
+  - Objetivo: Verificar comunicacao basica de escrita e leitura de 16 bits com CRC.
+  - Acao: Escreve nos registadores 0x001 (0x003C) e 0x002 (0xA55A) com seus respectivos
+    CRCs validos. Em seguida, le cada registador pelo MISO, validando o dado e o CRC retornado.
+  - Criterio de Sucesso: Dados e CRCs conferem; spi_busy vai a 0 durante o pacote e volta a 1.
+
+[TESTE 2] Burst de Escrita e Leitura com Auto-Incremento:
+  - Objetivo: Comprovar o auto-incremento de endereco em rajadas continuas.
+  - Acao: Abre transacao com endereco base 0x006 e envia 4 palavras consecutivas em um unico
+    ss baixo: {0xCAFE, 0xBEEF, 0xDEAD, 0xF00D}. Depois le em burst a partir de 0x006.
+  - Criterio de Sucesso: Todas as 4 palavras sao gravadas nos enderecos sequenciais 0x006, 
+    0x007, 0x008 e 0x009 e lidas com CRC correto.
+
+[TESTE 3] Matriz Completa de Modos SPI e Ordem de Bits:
+  - Objetivo: Validar robustez nos 4 modos de relogio e nas duas ordens de serializacao.
+  - Acao: Itera exaustivamente pelos 4 modos CPOL/CPHA (Modos 0, 1, 2 e 3) combinados com
+    bit_order = 1 (MSB first) e bit_order = 0 (LSB first), totalizando 8 combinacoes.
+    Executa escrita e leitura com verificacao de integridade para cada configuracao.
+  - Criterio de Sucesso: Transmissoes e recepcoes perfeitas em todos os 8 modos.
+
+[TESTE 4] Rejeicao de Dado com CRC Invalido:
+  - Objetivo: Garantir que dados corrompidos nao sejam gravados nos registadores.
+  - Acao: Envia comando de escrita para 0x002 com dado 0xFFFF mas com CRC propositalmente
+    invertido (~crc).
+  - Criterio de Sucesso: A escrita no barramento Wishbone e abortada, o pulso crc_err e
+    emitido, e a leitura subsequente comprova que 0x002 manteve seu valor antigo (0xA55A).
+
+[TESTE 5] Requisitos Contratuais do reset_s (Secoes 6.3.1.12 e 6.3.1.13):
+  - Objetivo: Testar a assimetria do reset_s e sua capacidade de abortar transacoes.
+  - Acao:
+    * 5a: Aplica reset_s = 0 fora do clock e confirma queda IMEDIATA (assert assincrono).
+    * 5b: Solta reset_s = 1 e confirma que a liberacao requer bordas de clk (deassert sincrono).
+    * 5c: Inicia uma transacao SPI e aplica reset_s = 0 no meio do pacote (apos 5 bits).
+  - Criterio de Sucesso: A FSM retorna imediatamente ao estado IDLE, miso vai a 0, nenhuma
+    transacao espuria ocorre no Wishbone, e a ponte retoma a operacao normal em seguida.
+
+[TESTE 6] Validacao do CRC de Cabecalho de 13 bits (Secao 6.3.3.14, com CRC_HEADER_EN=1):
+  - Objetivo: Testar protecao contra enderecos corrompidos na interface serial.
+  - Acao:
+    * Na escrita: Envia cabecalho de 13 bits com CRC de cabecalho corrompido seguido de dado
+      valido. Comprova que a transacao e abortada, crc_err e ativado e a memoria e varrida
+      confirmando que nenhum registador foi alterado.
+    * Na leitura: Envia cabecalho de leitura corrompido. Confirma que MISO permanece zerado,
+      nenhuma leitura ocorre no Wishbone e crc_err e sinalizado.
+  - Criterio de Sucesso: Aborto seguro em cabecalhos invalidos e recuperacao com cabecalho bom.
+
+[TESTE 7] Desativacao de ss (Secoes 5.3 e 6.3.1.14) e Trafego Espurio com ss=1:
+  - Objetivo: Garantir isolamento da interface e imunidade a ruído no barramento.
+  - Acao:
+    * 7a/b/c/d: Sobe ss = 1 prematuramente no meio do endereco (5/12b), no meio do dado (8/16b),
+      no meio do CRC (4/8b) e no meio de uma leitura.
+    * 7e: Com ss = 1 (inativo), injeta 60 pulsos aleatorios de sck e mosi (ruído na linha).
+  - Criterio de Sucesso: Em todos os casos incompletos, as palavras sao descartadas, a FSM
+    retorna a IDLE, spi_busy volta a 1, os pulsos espurios com ss=1 sao totalmente ignorados
+    e transacoes normais seguintes operam com sucesso.
+
+[TESTE 8] Burst de Escrita com CRC Invalido no Meio da Sequencia:
+  - Objetivo: Avaliar comportamento da FSM em rajada com erro pontual.
+  - Acao: Envia burst de 4 palavras (0x006 a 0x009), onde as palavras 0, 1 e 3 tem CRC correto,
+    mas a palavra 2 tem CRC corrompido.
+  - Criterio de Sucesso: As palavras 0 e 1 sao gravadas com sucesso; a palavra 2 e bloqueada
+    (mantendo o valor original do registo 0x008); e a palavra 3 e gravada com sucesso em 0x009,
+    comprovando auto-incremento preservado e sinalizacao de crc_err.
+
+Resultados Globais da Simulacao:
+  * Configuracao Opcao B (CRC_HEADER_EN=0): 58 verificacoes, 0 erros (PASS).
+  * Configuracao Opcao A (CRC_HEADER_EN=1): 66 verificacoes, 0 erros (PASS).
+===================================================================================

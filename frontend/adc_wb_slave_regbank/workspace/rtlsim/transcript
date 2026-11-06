@@ -1,0 +1,102 @@
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+vsim -voptargs=+acc work.adc_wb_slave_top_tb
+# vsim -voptargs="+acc" work.adc_wb_slave_top_tb 
+# Start time: 12:15:35 on Nov 06,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading sv_std.std
+# Loading work.adc_wb_slave_top_tb(fast)
+# Loading work.adc_wb_slave_top(fast)
+# Loading work.spi_wb_reset_sync(fast)
+# Loading work.wb_slave(fast)
+# Loading work.adc_reg_bank(fast)
+# Loading work.adc(fast)
+# Loading work.adc_analog(fast)
+# Loading work.adc_digital(fast)
+add wave -position insertpoint sim:/adc_wb_slave_top_tb/u_dut/*
+run
+# ===================================================================================
+#    SIMULACAO: BANCO DE REGISTOS (WISHBONE SLAVE) + NUCLEO ADC SAR 10 BITS          
+# ===================================================================================
+# 
+# --- [TESTE 1] Verificacao do Reset rst_sys (Assincrono na ativacao, Sincrono na liberacao) ---
+# [PASS] Desativacao sincrona de rst_sys confirmada (aguarda bordas de clk)
+# 
+# --- [TESTE 2] Inicializacao, Reset por Software e Configuracao de Registos ---
+# [PASS] Bit RESET (Bit 7 de ADC_CTRL) ativou o_adc_reset=1
+# [PASS] SAMPLE_RATE pos-SW-Reset (Addr 0x001): Lido = 0x0000 (Esperado = 0x0000)
+# [PASS] FILTER_CFG pos-SW-Reset (Addr 0x002): Lido = 0x0000 (Esperado = 0x0000)
+run
+# [PASS] SAMPLE_RATE (0x01) (Addr 0x001): Lido = 0x002a (Esperado = 0x002a)
+# [PASS] FILTER_CFG (0x02) (Addr 0x002): Lido = 0xc0de (Esperado = 0xc0de)
+# [PASS] GAIN_CFG (0x04) (Addr 0x004): Lido = 0x0015 (Esperado = 0x0015)
+# [PASS] COEFF_REG (Addr 0x006): Lido = 0x1000 (Esperado = 0x1000)
+# [PASS] COEFF_REG (Addr 0x007): Lido = 0x1001 (Esperado = 0x1001)
+# [PASS] COEFF_REG (Addr 0x008): Lido = 0x1002 (Esperado = 0x1002)
+# [PASS] COEFF_REG (Addr 0x009): Lido = 0x1003 (Esperado = 0x1003)
+# [PASS] COEFF_REG (Addr 0x00a): Lido = 0x1004 (Esperado = 0x1004)
+run
+# [PASS] COEFF_REG (Addr 0x00b): Lido = 0x1005 (Esperado = 0x1005)
+# [PASS] COEFF_REG (Addr 0x00c): Lido = 0x1006 (Esperado = 0x1006)
+# [PASS] COEFF_REG (Addr 0x00d): Lido = 0x1007 (Esperado = 0x1007)
+# [PASS] COEFF_REG (Addr 0x00e): Lido = 0x1008 (Esperado = 0x1008)
+# [PASS] COEFF_REG (Addr 0x00f): Lido = 0x1009 (Esperado = 0x1009)
+# 
+# --- [TESTE 3] Conversao do ADC SAR 10b, Polling de SPI_STATUS (0x05) e Leitura de ADC_DATA (0x03) ---
+run
+# [PASS] SPI_STATUS.DATA_RDY (Bit 6) detetado em 1 para V_in = 0.00 V (apos 15 leituras de polling)
+# [PASS] ADC_DATA (0x03) (Addr 0x003): Lido = 0x0000 (Esperado = 0x0000)
+run
+run
+# [PASS] SPI_STATUS.DATA_RDY (Bit 6) detetado em 1 para V_in = 0.25 V (apos 15 leituras de polling)
+# [PASS] ADC_DATA (0x03) (Addr 0x003): Lido = 0x013f (Esperado = 0x013f)
+run
+run
+run
+# [PASS] SPI_STATUS.DATA_RDY (Bit 6) detetado em 1 para V_in = 0.40 V (apos 15 leituras de polling)
+# [PASS] ADC_DATA (0x03) (Addr 0x003): Lido = 0x01ff (Esperado = 0x01ff)
+run
+run
+# [PASS] SPI_STATUS.DATA_RDY (Bit 6) detetado em 1 para V_in = 0.80 V (apos 15 leituras de polling)
+# [PASS] ADC_DATA (0x03) (Addr 0x003): Lido = 0x03ff (Esperado = 0x03ff)
+run
+run
+# 
+# --- [TESTE 4] Protecao de Registos Read-Only (0x03, 0x05) e Flag ERR ---
+# [PASS] ADC_DATA (RO protegido contra escrita) (Addr 0x003): Lido = 0x03ff (Esperado = 0x03ff)
+# [PASS] SPI_STATUS (Bit 7 ERR = 1) (Addr 0x005): Lido = 0x0080 (Esperado = 0x0080)
+# 
+# --- [TESTE 5] Enderecos Nao Mapeados (0x010 a 0xFFF): Escrita Ignorada e Leitura 16'h0000 com ACK ---
+# [PASS] Endereco Nao Mapeado 0x010 (Addr 0x010): Lido = 0x0000 (Esperado = 0x0000)
+# [PASS] Endereco Nao Mapeado 0x123 (Addr 0x123): Lido = 0x0000 (Esperado = 0x0000)
+# [PASS] Endereco Nao Mapeado 0xFFF (Addr 0xfff): Lido = 0x0000 (Esperado = 0x0000)
+# [PASS] SAMPLE_RATE intacto apos acessos 0x010-0xFFF (Addr 0x001): Lido = 0x002a (Esperado = 0x002a)
+# [PASS] FILTER_CFG intacto apos acessos 0x010-0xFFF (Addr 0x002): Lido = 0xc0de (Esperado = 0xc0de)
+# 
+###################################################################################
+#    STATUS FINAL: PASS! Todas as 32 verificacoes passaram com 0 erros!
+# 	PPPP   AA   SSS   SSS      !! !! !!
+# 	P   P A  A S     S         !! !! !!
+# 	PPPP  AAAA  SSS   SSS      !! !! !!
+# 	P     A  A     S     S             
+# 	P     A  A SSSS  SSSS      !! !! !!
+###################################################################################
+# 
+# ** Note: $finish    : ../../rtl/tb/adc_wb_slave_top_tb.sv(377)
+#    Time: 12855 ns  Iteration: 1  Instance: /adc_wb_slave_top_tb
+# 1
+# Break in Module adc_wb_slave_top_tb at ../../rtl/tb/adc_wb_slave_top_tb.sv line 377
+# End time: 12:28:04 on Nov 06,2026, Elapsed time: 0:12:29
+# Errors: 0, Warnings: 0

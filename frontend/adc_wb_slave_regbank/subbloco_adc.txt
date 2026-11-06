@@ -1,0 +1,131 @@
+===================================================================================
+SUB-BLOCO 1: ADC SAR 10 BITS + BANCO DE REGISTOS + WISHBONE SLAVE
+Modulo Topo: adc_wb_slave_top
+Caminho: frontend/adc_wb_slave_regbank/
+===================================================================================
+
+1. VISAO GERAL E ARQUITETURA DO SUB-BLOCO
+-----------------------------------------------------------------------------------
+O Sub-bloco 1 e responsavel pela aquisicao de sinais analogicos e disponibilizacao
+desses dados em um espaco de enderecamento de registos atraves de um barramento
+padrao Wishbone Slave.
+
+Ele e composto internamente pelos seguintes modulos SystemVerilog:
+  * adc_wb_slave_top.sv: Topo integrador do Sub-bloco 1.
+  * wb_slave.sv: Interface escrava do barramento Wishbone classico (12 bits de 
+    endereco, 16 bits de dados) com geracao de ACK, suporte a Write Strobes (wb_sel)
+    e decodificacao segura de enderecos nao mapeados.
+  * adc_reg_bank.sv: Banco de registos de 16 bits (enderecos 0x000 a 0x00F) contendo
+    os parametros de controle, taxa de amostragem, filtro, ganho, status e coeficientes.
+  * adc.sv / adc_analog.sv / adc_digital.sv: Modelo comportamental/RTL de alta 
+    fidelidade do conversor analogico-digital SAR de 10 bits.
+  * spi_wb_reset_sync.sv: Sincronizador de reset para o sinal rst_sys.
+
+
+2. ESPECIFICACAO DAS FUNCIONALIDADES E INTERFACES
+-----------------------------------------------------------------------------------
+A. Relogio e Reset:
+   - clk: Relogio principal do sistema (>= 100 MHz).
+   - rst_sys: Reset dedicado do sistema, ativo em nivel baixo ('0'). Possui ativacao
+     assincrona imediata e desativacao sincronizada com a borda de subida de clk.
+
+B. Interface com o Barramento Wishbone (Slave):
+   - wb_adr_i[11:0]: Endereco Wishbone (12 bits).
+   - wb_dat_i[15:0]: Barramento de dados de escrita (16 bits).
+   - wb_dat_o[15:0]: Barramento de dados de leitura (16 bits).
+   - wb_sel_i[1:0]: Selecao de bytes (Write Strobes: 2'b11 palavra inteira, 2'b01/2'b10 bytes).
+   - wb_we_i: Write Enable ('1' = escrita, '0' = leitura).
+   - wb_cyc_i: Cycle valid da transacao Wishbone.
+   - wb_stb_i: Strobe da transacao Wishbone.
+   - wb_ack_o: Acknowledge indicando conclusao do ciclo Wishbone (retornado em 1 ciclo).
+
+C. Interface Analogica e Conversor SAR 10b:
+   - v_in: Entrada analogica (tipo real, tensao de 0.0 V ate 0.8 V fundo de escala).
+   - Quantizacao: 10 bits (resolucao de 1024 niveis: 0 a 1023).
+     Passo (LSB): 0.8 V / 1023 = ~0.782 mV.
+   - Controle de Conversao:
+     * Disparada quando ADC_CTRL[6] (ENABLE) = '1'.
+     * Ao concluir a conversao SAR, a saida digital e atualizada e o bit DATA_RDY 
+       (bit 6 de SPI_STATUS) vai para '1'.
+     * Leitura da amostra atraves do registo somente-leitura ADC_DATA (0x003).
+
+D. Mapa de Registos Implementado (16 bits de largura):
+   - 0x000 (ADC_CTRL): 
+     * Bit 7 (RESET): Reset sincrono interno por software.
+     * Bit 6 (ENABLE): Habilita ('1') ou desabilita ('0') o conversor SAR.
+     * Bits [5:0] (MODE): Modo de operacao do ADC.
+   - 0x001 (SAMPLE_RATE): 
+     * Bits [7:0]: Codigo de programacao da taxa de amostragem.
+   - 0x002 (FILTER_CFG): 
+     * Bits [15:0]: Parametros de configuracao do filtro digital.
+   - 0x003 (ADC_DATA) - Read-Only: 
+     * Bits [9:0]: Dado convertido de 10 bits {6'b0, d_out[9:0]}. Protegido contra escrita.
+   - 0x004 (GAIN_CFG): 
+     * Bits [7:0]: Controle de ganho da etapa analogica.
+   - 0x005 (SPI_STATUS) - Read-Only: 
+     * Bit 7 (ERR): Sinaliza erro de CRC ou erro externo (via i_err_ext).
+     * Bit 6 (DATA_RDY): Sinaliza que novos dados de conversao estao prontos.
+   - 0x006 a 0x00F (COEFF_0 a COEFF_9): 
+     * 10 registos de 16 bits para coeficientes de filtro programaveis.
+   - 0x010 a 0xFFF (Enderecos Nao Mapeados):
+     * Protecao de espaco: Leituras retornam 16'h0000 e escritas sao descartadas 
+       silenciosamente, gerando sempre wb_ack_o sem travar o barramento.
+
+
+3. TESTES IMPLEMENTADOS NO TESTBENCH (adc_wb_slave_top_tb.sv)
+-----------------------------------------------------------------------------------
+Localizacao do Testbench: frontend/adc_wb_slave_regbank/rtl/tb/adc_wb_slave_top_tb.sv
+Como executar a simulacao:
+  cd frontend/adc_wb_slave_regbank/workspace/rtlsim
+  python run.py
+
+Cenarios de Teste Validados:
+
+[TESTE 1] Sincronismo do Reset rst_sys:
+  - Objetivo: Comprovar a ativacao assincrona e desativacao sincrona de rst_sys.
+  - Acao: Aplica rst_sys = 0 fora da borda de relogio e verifica se o reset interno
+    cai imediatamente (assincrono). Em seguida, solta rst_sys = 1 e verifica que o
+    reset interno so e liberado apos as bordas de subida de clk (sincrono).
+  - Criterio de Sucesso: Transicao assincrona no assert e alinhada ao relogio no deassert.
+
+[TESTE 2] Fluxo de Inicializacao, Reset por Software e Configuracao de Registos:
+  - Objetivo: Verificar escrita e leitura de todos os registos de configuracao e o reset por SW.
+  - Acao: 
+    1. Preenche SAMPLE_RATE e FILTER_CFG com valores nao nulos.
+    2. Escreve ADC_CTRL[7] = 1 (RESET) e depois 0.
+    3. Confirma que os registos foram limpos para o valor de reset.
+    4. Grava e valida readback de SAMPLE_RATE (0x01 = 0x002A), FILTER_CFG (0x02 = 0xC0DE),
+       GAIN_CFG (0x04 = 0x0015) e dos 10 coeficientes (0x006 a 0x00F).
+  - Criterio de Sucesso: Todos os dados lidos conferem exatamente com os valores gravados.
+
+[TESTE 3] Conversao do ADC SAR 10b, Polling de Status e Leitura de Tensao:
+  - Objetivo: Validar o funcionamento fim-a-fim da conversao analogica-digital.
+  - Acao: Estimula a entrada analogica v_in com 4 tensoes:
+    * 0.00 V -> Codigo esperado: 0 (0x000)
+    * 0.25 V -> Codigo esperado: 319 (0x13F)
+    * 0.40 V -> Codigo esperado: 511 (0x1FF)
+    * 0.80 V -> Codigo esperado: 1023 (0x3FF)
+    Para cada tensao: ativa o ADC (ADC_CTRL[6] = 1), faz polling em SPI_STATUS[6] 
+    (DATA_RDY) ate virar '1', e faz a leitura de ADC_DATA (0x03).
+  - Criterio de Sucesso: DATA_RDY vai para '1' e o codigo lido em ADC_DATA coincide com a
+    quantizacao teorica de 10 bits.
+
+[TESTE 4] Protecao de Registos Read-Only e Sinalizacao de Erro (ERR):
+  - Objetivo: Garantir que registos Read-Only nao sejam corrompidos por escritas.
+  - Acao: Tenta escrever 0xFFFF em ADC_DATA (0x03) e em SPI_STATUS (0x05).
+    Verifica que ADC_DATA preserva a amostra original intacta.
+    Em seguida, injeta um pulso no sinal i_err_ext e verifica se o bit 7 (ERR) de 
+    SPI_STATUS vai para '1'.
+  - Criterio de Sucesso: Escrita rejeitada em registradores RO e flag ERR setada.
+
+[TESTE 5] Espaco de Enderecos Nao Mapeados (0x010 a 0xFFF):
+  - Objetivo: Garantir robustez contra acessos fora da memoria util.
+  - Acao: Realiza escritas nos enderecos 0x010, 0x123 e 0xFFF com dados aleatorios, 
+    seguidas de leituras desses mesmos enderecos.
+  - Criterio de Sucesso: wb_ack_o e retornado prontamente em todos os acessos sem timeout,
+    leituras retornam 16'h0000 e os registos validos (0x01, 0x02) permanecem intactos.
+
+Resultado Global da Simulacao:
+  * 33 verificacoes automaticas realizadas.
+  * Status: PASS (0 erros).
+===================================================================================

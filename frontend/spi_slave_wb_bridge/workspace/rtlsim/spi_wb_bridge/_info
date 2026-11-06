@@ -1,0 +1,205 @@
+m255
+K4
+z2
+!s12c _opt2
+Z0 !s99 nomlopt
+!s12c _opt1
+R0
+!s12c _opt
+R0
+!s11f vlog 2023.3 2023.07, Jul 17 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z1 dC:/Users/thiag/OneDrive/Documentos/VIRTUS/CI_Expert/Hands_on/frontend/spi_slave_wb_bridge/workspace/rtlsim
+T_opt
+!s110 1793977695
+VH2>NIA^Q[:n<`l6`zEd262
+Z2 04 16 4 work spi_wb_bridge_tb fast 0
+=1-b025aa80eb84-6aeded5f-14e-4f64
+R0
+Z3 !s12b OEM100
+Z4 !s124 OEM10U7 
+o-quiet -auto_acc_if_foreign -work work -G CRC_HEADER_EN=0 +acc
+Z5 tCvgOpt 0
+n@_opt
+Z6 OL;O;2023.3;77
+R1
+T_opt1
+!s110 1793977697
+VGc3MdzKde7ShNb?82=3>^0
+R2
+=1-b025aa80eb84-6aeded60-34f-31e0
+R0
+R3
+R4
+o-quiet -auto_acc_if_foreign -work work -G CRC_HEADER_EN=1 +acc
+R5
+n@_opt1
+R6
+R1
+T_opt2
+!s110 1793977849
+V5k^Fl42Z`6Vz^GIOj6DG02
+R2
+=1-b025aa80eb84-6aededf9-309-1cc0
+R0
+R3
+R4
+o-quiet -auto_acc_if_foreign -work work +acc
+R5
+n@_opt2
+R6
+vspi_crc8_ccitt
+Z7 2../../rtl/src/spi_crc8_ccitt.sv|../../rtl/src/spi_slave_core.sv|../../rtl/src/spi_wb_bridge.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/wb_master_ctrl.sv
+Z8 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z9 !s110 1793977839
+!i10b 1
+!s100 R5B4hEHR]mFA[X1J<;CJ_1
+I4eP9RBOTFFLLefdLHkjoa2
+S1
+R1
+Z10 w1792688943
+8../../rtl/src/spi_crc8_ccitt.sv
+F../../rtl/src/spi_crc8_ccitt.sv
+!i122 2
+L0 11 71
+Z11 VDg1SIo80bB@j0V0VzS_@n1
+Z12 OL;L;2023.3;77
+r1
+!s85 0
+31
+Z13 !s108 1793977839.000000
+Z14 !s107 ../../rtl/src/wb_master_ctrl.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/spi_wb_bridge.sv|../../rtl/src/spi_slave_core.sv|../../rtl/src/spi_crc8_ccitt.sv|
+Z15 !s90 -sv|../../rtl/src/spi_crc8_ccitt.sv|../../rtl/src/spi_slave_core.sv|../../rtl/src/spi_wb_bridge.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/wb_master_ctrl.sv|
+!i113 0
+Z16 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R5
+vspi_slave_core
+R7
+R8
+R9
+!i10b 1
+!s100 KoD?Bg^>3aQL?`WI[d12m1
+IB@CE0]0dbadKkd6`>31X=0
+S1
+R1
+Z17 w1793903080
+8../../rtl/src/spi_slave_core.sv
+F../../rtl/src/spi_slave_core.sv
+!i122 2
+L0 17 356
+R11
+R12
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R16
+R5
+vspi_wb_bridge
+R7
+R8
+R9
+!i10b 1
+!s100 ^HWAm;RIn<ES4f[8H;g`_2
+II3c[PkLKACdP[lzD8QngJ3
+S1
+R1
+R17
+8../../rtl/src/spi_wb_bridge.sv
+F../../rtl/src/spi_wb_bridge.sv
+!i122 2
+L0 12 159
+R11
+R12
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R16
+R5
+vspi_wb_bridge_tb
+2../../rtl/tb\spi_wb_bridge_tb.sv
+R8
+R9
+!i10b 1
+!s100 D7Z_8:;?S;]Y0nmK4XLSo2
+IJh_h:fCT637<MQ=fZPSiS0
+S1
+R1
+w1793904044
+8../../rtl/tb\spi_wb_bridge_tb.sv
+F../../rtl/tb\spi_wb_bridge_tb.sv
+!i122 3
+L0 28 425
+R11
+R12
+r1
+!s85 0
+31
+R13
+!s107 ../../rtl/tb\spi_wb_bridge_tb.sv|
+!s90 -sv|../../rtl/tb\spi_wb_bridge_tb.sv|
+!i113 0
+R16
+R5
+vspi_wb_reset_sync
+R7
+R8
+R9
+!i10b 1
+!s100 7SNFLlc7U3eDFBL@_aDm>2
+IG29ZH3IAcT5>>kkTP=4Ok1
+S1
+R1
+R10
+8../../rtl/src/spi_wb_reset_sync.sv
+F../../rtl/src/spi_wb_reset_sync.sv
+!i122 2
+L0 10 22
+R11
+R12
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R16
+R5
+vwb_master_ctrl
+R7
+R8
+R9
+!i10b 1
+!s100 K1Oz:1T_6469D]3h^DSA:3
+I`VMg01nWS4]R6GQ@WD5]S1
+S1
+R1
+R17
+8../../rtl/src/wb_master_ctrl.sv
+F../../rtl/src/wb_master_ctrl.sv
+!i122 2
+L0 11 124
+R11
+R12
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R16
+R5

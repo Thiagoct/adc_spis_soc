@@ -1,0 +1,136 @@
+# vsim -c -voptargs="+acc" -do "run -all; quit" adc_spi_top_tb -GCRC_HEADER_EN=1 
+# Start time: 16:14:12 on Nov 05,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt2
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.adc_spi_top_tb(fast)
+# Loading work.adc_spi_top(fast)
+# Loading work.spi_wb_bridge(fast)
+# Loading work.spi_wb_reset_sync(fast)
+# Loading work.spi_crc8_ccitt(fast)
+# Loading work.spi_slave_core(fast)
+# Loading work.wb_master_ctrl(fast)
+# Loading work.adc_wb_slave_top(fast)
+# Loading work.wb_slave(fast)
+# Loading work.adc_reg_bank(fast)
+# Loading work.adc(fast)
+# Loading work.adc_analog(fast)
+# Loading work.adc_digital(fast)
+# run -all
+# ===================================================================================
+#    SIMULACAO: TOPO GERAL (adc_spi_top) | CRC_HEADER_EN=1
+# ===================================================================================
+# [PASS] Estado Ocioso Inicial: spi_busy=1, miso=0
+# 
+# --- [TESTE 1] Escrita e Leitura Simples nos Registos do ADC (Modo 0, MSB) ---
+# [PASS] Sinais fisicos do ADC configurados (enable=1, rate=0x3C, filter=0xA55A, gain=0x1F)
+# [PASS] Leitura ADC_CTRL (0x000): Dado=0x0040 | CRC=0xc7 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura SAMPLE_RATE (0x001): Dado=0x003c | CRC=0xb4 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura FILTER_CFG (0x002): Dado=0xa55a | CRC=0xd8 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura GAIN_CFG (0x004): Dado=0x001f | CRC=0x5d (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura ADC_DATA (0.4V -> 511 = 0x01FF) (0x003): Dado=0x01ff | CRC=0xe6 (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 2] Escrita e Leitura em BURST com Auto-Incremento (0x006 a 0x009) ---
+# [PASS] Burst Read Palavra 0 (Addr 0x006): Dado=0xcafe | CRC=0x9b
+# [PASS] Burst Read Palavra 1 (Addr 0x007): Dado=0xbeef | CRC=0x1a
+# [PASS] Burst Read Palavra 2 (Addr 0x008): Dado=0xdead | CRC=0x26
+# [PASS] Burst Read Palavra 3 (Addr 0x009): Dado=0xf00d | CRC=0x37
+# 
+# --- [TESTE 3] Verificacao de Todos os Modos (CPOL/CPHA = 00,01,10,11) e Bit Order ---
+# [PASS] Leitura RESERVED_CFG (0x00a): Dado=0x500a | CRC=0x3a (CPOL=0, CPHA=0, MSB=0)
+# [PASS] Leitura RESERVED_CFG (0x00a): Dado=0x501a | CRC=0x4a (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura RESERVED_CFG (0x00b): Dado=0x510a | CRC=0x2f (CPOL=0, CPHA=1, MSB=0)
+# [PASS] Leitura RESERVED_CFG (0x00b): Dado=0x511a | CRC=0x5f (CPOL=0, CPHA=1, MSB=1)
+# [PASS] Leitura RESERVED_CFG (0x00c): Dado=0x520a | CRC=0x10 (CPOL=1, CPHA=0, MSB=0)
+# [PASS] Leitura RESERVED_CFG (0x00c): Dado=0x521a | CRC=0x60 (CPOL=1, CPHA=0, MSB=1)
+# [PASS] Leitura RESERVED_CFG (0x00d): Dado=0x530a | CRC=0x05 (CPOL=1, CPHA=1, MSB=0)
+# [PASS] Leitura RESERVED_CFG (0x00d): Dado=0x531a | CRC=0x75 (CPOL=1, CPHA=1, MSB=1)
+# 
+# --- [TESTE 4] Injecao de Erro de CRC8-CCITT e Feedback em SPI_STATUS (0x05) ---
+# [PASS] Leitura FILTER_CFG (Protegido por CRC) (0x002): Dado=0xa55a | CRC=0xd8 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura SPI_STATUS (ERR=1, DATA_RDY=1) (0x005): Dado=0x00c0 | CRC=0x4e (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 5] Reset Sincrono via Registo ADC_CTRL (Bit 7 = 1 -> 0) ---
+# [PASS] Leitura SAMPLE_RATE Pos-Reset (0x001): Dado=0x0000 | CRC=0x00 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura SPI_STATUS Pos-Reset (ERR limpo) (0x005): Dado=0x0000 | CRC=0x00 (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 6] GAP A: reset_s (Assert Assincrono, Deassert Sincrono e Mid-Stream) ---
+# [PASS] reset_s: sincronizado em 1 antes do teste
+# [PASS] reset_s: assert ASSINCRONO imediato
+# [PASS] reset_s: mantido em 0 enquanto reset_s=0
+# [PASS] reset_s: deassert NAO assincrono
+# [PASS] reset_s: deassert sincrono, ainda 0 apos 1a borda
+# [PASS] reset_s: deassert sincrono, 1 apos 2a borda
+# [PASS] reset_s no meio da transacao: FSM volta a ST_IDLE, miso=0
+# [PASS] reset_s no meio da transacao: apos ss=1, spi_busy=1 e FSM ociosa
+# [PASS] reset_s no meio da transacao: nenhuma escrita Wishbone gerada
+# [PASS] Leitura REG 0x00C intacto apos reset_s (0x00c): Dado=0x1234 | CRC=0xf1 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura Transacao normal recuperada apos reset_s (0x00d): Dado=0xbeef | CRC=0x1a (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 7] GAP C: Desativacao de ss (Abortos) e Trafego Espurio com ss=1 ---
+# [PASS] Abort no meio do endereco: FSM ociosa e spi_busy=1
+# [PASS] Abort no meio do endereco: nenhuma transacao Wishbone
+# [PASS] Abort no meio do dado: FSM ociosa e spi_busy=1
+# [PASS] Leitura Abort no meio do dado: palavra incompleta descartada (0x00e): Dado=0x7777 | CRC=0x8b (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Abort no meio do CRC: FSM ociosa e spi_busy=1
+# [PASS] Abort no meio do CRC: nenhuma escrita Wishbone
+# [PASS] Leitura 0x00E inalterado apos abort de CRC (0x00e): Dado=0x7777 | CRC=0x8b (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Abort no meio da leitura: FSM ociosa, miso=0 e spi_busy=1
+# [PASS] Trafego espurio com ss=1 totalmente ignorado (sem Wishbone, miso=0, spi_busy=1)
+# [PASS] Leitura Transacao normal apos abortos e trafego espurio (0x00f): Dado=0x4321 | CRC=0x83 (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 8] GAP D: Burst Write com CRC Ruim na Palavra 2 (0x006 a 0x009) ---
+# [PASS] Burst com CRC ruim: FSM ociosa e spi_busy=1
+# [PASS] Burst com CRC ruim: crc_err sinalizado
+# [PASS] Burst com CRC ruim: exatamente 3 das 4 palavras escritas no Wishbone
+# [PASS] Leitura Burst CRC ruim: palavra 0 em 0x006 (0x006): Dado=0xcafe | CRC=0x9b (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura Burst CRC ruim: palavra 1 em 0x007 (0x007): Dado=0xbeef | CRC=0x1a (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura Burst CRC ruim: palavra 2 BLOQUEADA (0x008 inalterado) (0x008): Dado=0x1111 | CRC=0x35 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura Burst CRC ruim: palavra 3 em 0x009 (auto-incremento ok) (0x009): Dado=0xf00d | CRC=0x37 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Leitura SPI_STATUS (ERR=1 apos erro de CRC em burst) (0x005): Dado=0x0080 | CRC=0x89 (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 9] GAP B: CRC do Cabecalho de 13 bits (Opcao A vs Opcao B) ---
+# [INFO] Executando validacao do CRC do Cabecalho (CRC_HEADER_EN=1)...
+# [PASS] Cabecalho invalido (escrita): FSM volta a ociosa
+# [PASS] Cabecalho invalido (escrita): crc_err sinalizado
+# [PASS] Cabecalho invalido (escrita): nenhuma transacao Wishbone gerada
+# [PASS] Leitura Cabecalho invalido: registo 0x00E protegido (0x00e): Dado=0x1111 | CRC=0x35 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] Cabecalho invalido: nenhum registo foi alterado indevidamente
+# [PASS] Cabecalho invalido (leitura): MISO=0 e sem leitura Wishbone
+# [PASS] Cabecalho invalido (leitura): crc_err sinalizado
+# [PASS] Leitura Cabecalho valido apos erro: escrita/leitura OK (0x00e): Dado=0x2222 | CRC=0x6a (CPOL=0, CPHA=0, MSB=1)
+# 
+# --- [TESTE 10] GAP E: Configuracao de SAMPLE_RATE (0x001) e Saida Fisica ---
+# [PASS] o_sample_rate atualizado para 0x55 na porta de saida fisica
+# [PASS] Leitura Readback SAMPLE_RATE = 0x55 (0x001): Dado=0x0055 | CRC=0xac (CPOL=0, CPHA=0, MSB=1)
+# [PASS] o_sample_rate atualizado para 0xFF na porta de saida fisica
+# [PASS] Leitura Readback SAMPLE_RATE = 0xFF (0x001): Dado=0x00ff | CRC=0xf3 (CPOL=0, CPHA=0, MSB=1)
+# [PASS] o_sample_rate atualizado para 0x00 na porta de saida fisica
+# [PASS] Leitura Readback SAMPLE_RATE = 0x00 (0x001): Dado=0x0000 | CRC=0x00 (CPOL=0, CPHA=0, MSB=1)
+# 
+###################################################################################
+#    STATUS FINAL: PASS! Todas as 66 verificacoes passaram com 0 erros! [CRC_HEADER_EN=1]
+# 	PPPP   AA   SSS   SSS      !! !! !!
+# 	P   P A  A S     S         !! !! !!
+# 	PPPP  AAAA  SSS   SSS      !! !! !!
+# 	P     A  A     S     S             
+# 	P     A  A SSSS  SSSS      !! !! !!
+###################################################################################
+# 
+# ** Note: $finish    : C:/Users/thiag/OneDrive/Documentos/VIRTUS/CI_Expert/Hands_on/Litex/tb/adc_spi_top_tb.sv(697)
+#    Time: 3535005 ns  Iteration: 0  Instance: /adc_spi_top_tb
+# End time: 16:14:15 on Nov 05,2026, Elapsed time: 0:00:03
+# Errors: 0, Warnings: 0

@@ -1,0 +1,226 @@
+m255
+K4
+z2
+!s12c _opt
+Z0 !s99 nomlopt
+!s11f vlog 2023.3 2023.07, Jul 17 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z1 dC:/Users/thiag/OneDrive/Documentos/VIRTUS/CI_Expert/Hands_on/frontend/adc_wb_slave_regbank/workspace/rtlsim
+T_opt
+!s110 1793912455
+VhzHMXnL5?6LPeHNJK4BK50
+04 19 4 work adc_wb_slave_top_tb fast 0
+=1-b025aa80eb84-6aecee86-331-5b04
+R0
+!s12b OEM100
+!s124 OEM10U8 
+o-quiet -auto_acc_if_foreign -work work +acc
+Z2 tCvgOpt 0
+n@_opt
+OL;O;2023.3;77
+R1
+vadc
+Z3 2../../rtl/src/adc.sv|../../rtl/src/adc_analog.sv|../../rtl/src/adc_digital.sv|../../rtl/src/adc_reg_bank.sv|../../rtl/src/adc_wb_slave_top.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/wb_slave.sv
+Z4 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z5 !s110 1793978061
+!i10b 1
+!s100 _`4[?J3S^j9_TIc:KJmzD3
+Icz]kzFiL_M=^Q4f@9A`SZ0
+S1
+R1
+Z6 w1792692663
+8../../rtl/src/adc.sv
+F../../rtl/src/adc.sv
+!i122 2
+L0 11 38
+Z7 VDg1SIo80bB@j0V0VzS_@n1
+Z8 OL;L;2023.3;77
+r1
+!s85 0
+31
+Z9 !s108 1793978061.000000
+Z10 !s107 ../../rtl/src/wb_slave.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/adc_wb_slave_top.sv|../../rtl/src/adc_reg_bank.sv|../../rtl/src/adc_digital.sv|../../rtl/src/adc_analog.sv|../../rtl/src/adc.sv|
+Z11 !s90 -sv|../../rtl/src/adc.sv|../../rtl/src/adc_analog.sv|../../rtl/src/adc_digital.sv|../../rtl/src/adc_reg_bank.sv|../../rtl/src/adc_wb_slave_top.sv|../../rtl/src/spi_wb_reset_sync.sv|../../rtl/src/wb_slave.sv|
+!i113 0
+Z12 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R2
+vadc_analog
+R3
+R4
+R5
+!i10b 1
+!s100 bB0g8da4::9QlI?KaZfGd3
+I4M];o@N<H71kL65Y6<`dQ3
+S1
+R1
+R6
+8../../rtl/src/adc_analog.sv
+F../../rtl/src/adc_analog.sv
+!i122 2
+L0 9 30
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2
+vadc_digital
+R3
+R4
+R5
+!i10b 1
+!s100 OVY0CH5Wo<OKO5cYJMeX:0
+IKXgzGXOHzI8c@QSmAjj2G1
+S1
+R1
+Z13 w1792692665
+8../../rtl/src/adc_digital.sv
+F../../rtl/src/adc_digital.sv
+!i122 2
+L0 10 44
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2
+vadc_reg_bank
+R3
+R4
+R5
+!i10b 1
+!s100 ;?z>7:9zK83WQDZd;Jgfc3
+I1bJYl748i8?S@PnZU7?n<3
+S1
+R1
+R6
+8../../rtl/src/adc_reg_bank.sv
+F../../rtl/src/adc_reg_bank.sv
+!i122 2
+L0 19 151
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2
+vadc_wb_slave_top
+R3
+R4
+R5
+!i10b 1
+!s100 ?R4n;U0zoIkmHLnd1Ne9J2
+I3zF?i;1:1Fmbj<zHh2l3=2
+S1
+R1
+w1792694260
+8../../rtl/src/adc_wb_slave_top.sv
+F../../rtl/src/adc_wb_slave_top.sv
+!i122 2
+L0 13 152
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2
+vadc_wb_slave_top_tb
+2../../rtl/tb\adc_wb_slave_top_tb.sv
+R4
+R5
+!i10b 1
+!s100 W`_P4jJ]kP=6^N>zk[=eh0
+InN`LI@eaj`_lC;]5FDAV83
+S1
+R1
+R6
+8../../rtl/tb\adc_wb_slave_top_tb.sv
+F../../rtl/tb\adc_wb_slave_top_tb.sv
+!i122 3
+L0 23 358
+R7
+R8
+r1
+!s85 0
+31
+R9
+!s107 ../../rtl/tb\adc_wb_slave_top_tb.sv|
+!s90 -sv|../../rtl/tb\adc_wb_slave_top_tb.sv|
+!i113 0
+R12
+R2
+vspi_wb_reset_sync
+R3
+R4
+R5
+!i10b 1
+!s100 7SNFLlc7U3eDFBL@_aDm>2
+IG29ZH3IAcT5>>kkTP=4Ok1
+S1
+R1
+R6
+8../../rtl/src/spi_wb_reset_sync.sv
+F../../rtl/src/spi_wb_reset_sync.sv
+!i122 2
+L0 10 22
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2
+vwb_slave
+R3
+R4
+R5
+!i10b 1
+!s100 FUIa:6IEm?e8W5<L1o?UP0
+I>K2ZWZ9o4CJ7O:93aMNFd0
+S1
+R1
+R13
+8../../rtl/src/wb_slave.sv
+F../../rtl/src/wb_slave.sv
+!i122 2
+L0 14 144
+R7
+R8
+r1
+!s85 0
+31
+R9
+R10
+R11
+!i113 0
+R12
+R2

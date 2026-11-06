@@ -1,0 +1,165 @@
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+vsim -voptargs=+acc work.spi_wb_bridge_tb
+# vsim -voptargs="+acc" work.spi_wb_bridge_tb 
+# Start time: 12:10:49 on Nov 06,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility.
+# ** Note: (vopt-143) Recognized 1 FSM in module "spi_slave_core(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "wb_master_ctrl(fast)".
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# Loading sv_std.std
+# Loading work.spi_wb_bridge_tb(fast)
+# Loading work.spi_wb_bridge(fast)
+# Loading work.spi_wb_reset_sync(fast)
+# Loading work.spi_crc8_ccitt(fast)
+# Loading work.spi_slave_core(fast)
+# Loading work.wb_master_ctrl(fast)
+add wave -position insertpoint sim:/spi_wb_bridge_tb/u_dut/*
+run
+# === TB: spi_wb_bridge (Sub-bloco 2) | CRC_HEADER_EN=0 ===
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# [PASS] Ocioso: spi_busy=1, miso=0
+# 
+# --- [1] Escrita/Leitura simples ---
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run

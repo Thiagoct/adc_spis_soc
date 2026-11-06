@@ -1,0 +1,382 @@
+# ----------------------------------------------------------------------
+# Copyright (c) 2026 VIRTUS-UFCG. All rights reserved
+# VIRTUS-UFCG Confidential Proprietary
+# ----------------------------------------------------------------------
+
+import sys
+import argparse
+
+from migen import *
+from litex.soc.interconnect import wishbone
+
+from litex.build.generic_platform import *
+from litex.build.sim              import SimPlatform
+from litex.build.sim.config       import SimConfig
+
+from litex.soc.integration.common   import *
+from litex.soc.integration.soc_core import *
+from litex.soc.integration.builder  import *
+from litex.soc.integration.soc      import *
+
+from litex.soc.cores.bitbang import *
+from litex.soc.cores.gpio    import GPIOTristate
+from litex.soc.cores.cpu     import CPUS
+from litex.soc.cores.video   import VideoGenericPHY
+
+from litedram           import modules as litedram_modules
+from litedram.modules   import parse_spd_hexdump
+from litedram.phy.model import sdram_module_nphases, get_sdram_phy_settings
+from litedram.phy.model import SDRAMPHYModel
+
+from liteeth.common             import *
+from liteeth.phy.gmii           import LiteEthPHYGMII
+from liteeth.phy.xgmii          import LiteEthPHYXGMII
+from liteeth.phy.model          import LiteEthPHYModel
+from liteeth.mac                import LiteEthMAC
+from liteeth.core.arp           import LiteEthARP
+from liteeth.core.ip            import LiteEthIP
+from liteeth.core.udp           import LiteEthUDP
+from liteeth.core.icmp          import LiteEthICMP
+from liteeth.core               import LiteEthUDPIPCore
+from liteeth.frontend.etherbone import LiteEthEtherbone
+
+from litescope import LiteScopeAnalyzer
+
+# AdderWBTop -------------------------------------------------------------------
+class AdderWBTop(Module):
+    def __init__(self, platform, data_width=32, addr_width=16, register_num=37):
+        # Interface Wishbone
+        self.bus = wishbone.Interface(
+            data_width=data_width,
+            adr_width=addr_width
+        )
+        
+        # Sinais de saída
+        self.err_o = Signal()
+        
+        
+        # Reset ativo alto (conversão do reset do LiteX)
+        rst_active_high = Signal()
+        self.comb += rst_active_high.eq(~ResetSignal())
+        
+        # Instância do módulo SystemVerilog
+        self.specials += Instance("adder_wb_top",
+            
+            # Clock e reset
+            i_clk_i=ClockSignal(),
+            i_rst_i=rst_active_high,
+            
+            # Interface Wishbone
+            i_adr_i=self.bus.adr,
+            i_dat_i=self.bus.dat_w,
+            o_dat_o=self.bus.dat_r,
+            i_sel_i=self.bus.sel,
+            i_we_i=self.bus.we,
+            i_stb_i=self.bus.stb,
+            i_cyc_i=self.bus.cyc,
+            o_ack_o=self.bus.ack,
+            o_err_o=self.err_o
+        )
+        
+        
+        # Adicionar arquivos fonte
+        platform.add_source("src/adder_wb_top.sv", language="systemverilog")
+        platform.add_source("src/wb_slave.sv", language="systemverilog")
+        platform.add_source("src/adder_top.sv", language="systemverilog")
+        platform.add_source("src/adder.sv", language="systemverilog")
+        platform.add_source("src/adder1d.sv", language="systemverilog")
+        platform.add_source("src/adder1d_datapath.sv", language="systemverilog")
+        platform.add_source("src/batchnorm2d.sv", language="systemverilog")
+        platform.add_source("src/relu.sv", language="systemverilog")
+
+# IOs ----------------------------------------------------------------------------------------------
+
+_io = [
+    # Clk / Rst.
+    ("sys_clk", 0, Pins(1)),
+    ("sys_rst", 0, Pins(1)),
+
+    # Serial.
+    ("serial", 0,
+        Subsignal("source_valid", Pins(1)),
+        Subsignal("source_ready", Pins(1)),
+        Subsignal("source_data",  Pins(8)),
+
+        Subsignal("sink_valid",   Pins(1)),
+        Subsignal("sink_ready",   Pins(1)),
+        Subsignal("sink_data",    Pins(8)),
+    ),
+]
+
+# Platform -----------------------------------------------------------------------------------------
+
+class Platform(SimPlatform):
+    def __init__(self):
+        SimPlatform.__init__(self, "SIM", _io)
+
+# Simulation SoC -----------------------------------------------------------------------------------
+
+class SimSoC(SoCCore):
+    def __init__(self,
+        with_sdram             = False,
+        with_sdram_bist        = False,
+        with_analyzer          = False,
+        sdram_module           = "MT48LC16M16",
+        sdram_init             = [],
+        sdram_data_width       = 32,
+        sdram_spd_data         = None,
+        sdram_verbosity        = 0,
+        sim_debug              = False,
+        trace_reset_on         = False,
+        with_adder             = False, # Adicionado para o AdderWBTop
+        **kwargs):
+
+        # Platform ---------------------------------------------------------------------------------
+        platform = Platform()
+
+        # Parameters -------------------------------------------------------------------------------
+        sys_clk_freq = int(1e6)
+
+        # CRG --------------------------------------------------------------------------------------
+        self.crg = CRG(platform.request("sys_clk"))
+
+        # SoCCore ----------------------------------------------------------------------------------
+        SoCCore.__init__(self, platform, clk_freq=sys_clk_freq,
+            #cpu_variant="minimal",             
+            ident = "LiteX Simulation",
+            **kwargs)
+
+        # BIOS Config ------------------------------------------------------------------------------
+        # FIXME: Expose?
+        #self.add_config("BIOS_NO_PROMPT")
+        #self.add_config("BIOS_NO_DELAYS")
+        #self.add_config("BIOS_NO_BUILD_TIME")
+        #self.add_config("BIOS_NO_CRC")
+
+        # AdderWBTop Integration -------------------------------------------------------------------
+        if with_adder:
+            self.submodules.adder_wb_top = AdderWBTop(platform=platform, data_width=32, addr_width=16, register_num=37)
+            # Mapear para dentro da região de I/O (0x80000000)
+            self.bus.add_slave(
+                name="adder_wb_top",
+                slave=self.adder_wb_top.bus,
+                region=SoCRegion(
+                    origin=0x80000000,  # Início da região de I/O
+                    size=0x1000,
+                    cached=False
+                )
+            )
+
+        # SDRAM ------------------------------------------------------------------------------------
+        if not self.integrated_main_ram_size and with_sdram:
+            sdram_clk_freq = int(100e6) # FIXME: use 100MHz timings
+            if sdram_spd_data is None:
+                sdram_module_cls = getattr(litedram_modules, sdram_module)
+                sdram_rate       = "1:{}".format(sdram_module_nphases[sdram_module_cls.memtype])
+                sdram_module     = sdram_module_cls(sdram_clk_freq, sdram_rate)
+            else:
+                sdram_module = litedram_modules.SDRAMModule.from_spd_data(sdram_spd_data, sdram_clk_freq)
+            self.sdrphy = SDRAMPHYModel(
+                module     = sdram_module,
+                data_width = sdram_data_width,
+                clk_freq   = sdram_clk_freq,
+                verbosity  = sdram_verbosity,
+                init       = sdram_init)
+            self.add_sdram("sdram",
+                phy                     = self.sdrphy,
+                module                  = sdram_module,
+                l2_cache_size           = kwargs.get("l2_size", 8192),
+                l2_cache_min_data_width = kwargs.get("min_l2_data_width", 128),
+                l2_cache_reverse        = False,
+                with_bist               = with_sdram_bist
+            )
+            if sdram_init != []:
+                # Skip SDRAM test to avoid corrupting pre-initialized contents.
+                self.add_constant("SDRAM_TEST_DISABLE")
+            else:
+                # Reduce memtest size for simulation speedup
+                self.add_constant("MEMTEST_DATA_SIZE", 8*1024)
+                self.add_constant("MEMTEST_ADDR_SIZE", 8*1024)
+
+
+
+
+        # Simulation debugging ----------------------------------------------------------------------
+        if sim_debug:
+            platform.add_debug(self, reset=1 if trace_reset_on else 0)
+        else:
+            self.comb += platform.trace.eq(1)
+
+        # Analyzer ---------------------------------------------------------------------------------
+        if with_analyzer:
+            analyzer_signals = [
+                # IBus (could also just added as self.cpu.ibus)
+                self.cpu.ibus.stb,
+                self.cpu.ibus.cyc,
+                self.cpu.ibus.adr,
+                self.cpu.ibus.we,
+                self.cpu.ibus.ack,
+                self.cpu.ibus.sel,
+                self.cpu.ibus.dat_w,
+                self.cpu.ibus.dat_r,
+                # DBus (could also just added as self.cpu.dbus)
+                self.cpu.dbus.stb,
+                self.cpu.dbus.cyc,
+                self.cpu.dbus.adr,
+                self.cpu.dbus.we,
+                self.cpu.dbus.ack,
+                self.cpu.dbus.sel,
+                self.cpu.dbus.dat_w,
+                self.cpu.dbus.dat_r,
+            ]
+            self.analyzer = LiteScopeAnalyzer(analyzer_signals,
+                depth        = 512,
+                clock_domain = "sys",
+                csr_csv       = "analyzer.csv")
+
+# Build --------------------------------------------------------------------------------------------
+
+def generate_gtkw_savefile(builder, vns, trace_fst):
+    from litex.build.sim import gtkwave as gtkw
+    dumpfile = os.path.join(builder.gateware_dir, "sim.{}".format("fst" if trace_fst else "vcd"))
+    savefile = os.path.join(builder.gateware_dir, "sim.gtkw")
+    soc = builder.soc
+
+    with gtkw.GTKWSave(vns, savefile=savefile, dumpfile=dumpfile) as save:
+        save.clocks()
+        save.fsm_states(soc)
+        if "main_ram" in soc.bus.slaves.keys():
+            save.add(soc.bus.slaves["main_ram"], mappers=[gtkw.wishbone_sorter(), gtkw.wishbone_colorer()])
+
+        if hasattr(soc, "sdrphy"):
+            # all dfi signals
+            save.add(soc.sdrphy.dfi, mappers=[gtkw.dfi_sorter(), gtkw.dfi_in_phase_colorer()])
+
+            # each phase in separate group
+            with save.gtkw.group("dfi phaseX", closed=True):
+                for i, phase in enumerate(soc.sdrphy.dfi.phases):
+                    save.add(phase, group_name="dfi p{}".format(i), mappers=[
+                        gtkw.dfi_sorter(phases=False),
+                        gtkw.dfi_in_phase_colorer(),
+                    ])
+
+            # only dfi command/data signals
+            def dfi_group(name, suffixes):
+                save.add(soc.sdrphy.dfi, group_name=name, mappers=[
+                    gtkw.regex_filter(gtkw.suffixes2re(suffixes)),
+                    gtkw.dfi_sorter(),
+                    gtkw.dfi_per_phase_colorer(),
+                ])
+
+            dfi_group("dfi commands", ["cas_n", "ras_n", "we_n"])
+            dfi_group("dfi commands", ["wrdata"])
+            dfi_group("dfi commands", ["wrdata_mask"])
+            dfi_group("dfi commands", ["rddata"])
+
+def sim_args(parser):
+    # ROM / RAM.
+    parser.add_argument("--rom-init",             default=None,            help="ROM init file (.bin or .json).")
+    parser.add_argument("--ram-init",             default=None,            help="RAM init file (.bin or .json).")
+
+    # DRAM.
+    parser.add_argument("--with-sdram",           action="store_true",     help="Enable SDRAM support.")
+    parser.add_argument("--with-sdram-bist",      action="store_true",     help="Enable SDRAM BIST Generator/Checker modules.")
+    parser.add_argument("--sdram-module",         default="MT48LC16M16",   help="Select SDRAM chip.")
+    parser.add_argument("--sdram-data-width",     default=32,              help="Set SDRAM chip data width.")
+    parser.add_argument("--sdram-init",           default=None,            help="SDRAM init file (.bin or .json).")
+    parser.add_argument("--sdram-from-spd-dump",  default=None,            help="Generate SDRAM module based on data from SPD EEPROM dump.")
+    parser.add_argument("--sdram-verbosity",      default=0,               help="Set SDRAM checker verbosity.")
+
+    # AdderWBTop.
+    parser.add_argument("--with-adder",           action="store_true",     help="Enable AdderWBTop support.")
+
+    # Debug/Waveform.
+    parser.add_argument("--sim-debug",            action="store_true",     help="Add simulation debugging modules.")
+    parser.add_argument("--gtkwave-savefile",     action="store_true",     help="Generate GTKWave savefile.")
+    parser.add_argument("--non-interactive",      action="store_true",     help="Run simulation without user input.")
+
+def main():
+    from litex.build.parser import LiteXArgumentParser
+    parser = LiteXArgumentParser(description="LiteX SoC Simulation utility")
+    parser.set_platform(SimPlatform)
+    sim_args(parser)
+    args = parser.parse_args()
+
+    soc_kwargs = soc_core_argdict(args)
+
+    sys_clk_freq = int(1e6)
+    sim_config   = SimConfig()
+    sim_config.add_clocker("sys_clk", freq_hz=sys_clk_freq)
+
+    # Configuration --------------------------------------------------------------------------------
+
+    # UART.
+    if soc_kwargs["uart_name"] == "serial":
+        soc_kwargs["uart_name"] = "sim"
+        sim_config.add_module("serial2console", "serial")
+
+    # Create config SoC that will be used to prepare/configure real one.
+    conf_soc = SimSoC(**soc_kwargs)
+
+    # ROM.
+    if args.rom_init:
+        soc_kwargs["integrated_rom_init"] = get_mem_data(args.rom_init,
+            data_width = conf_soc.bus.data_width,
+            endianness = conf_soc.cpu.endianness
+        )
+
+    # RAM / SDRAM.
+    ram_boot_address = None
+    soc_kwargs["integrated_main_ram_size"] = args.integrated_main_ram_size
+    if args.integrated_main_ram_size:
+        if args.ram_init is not None:
+            soc_kwargs["integrated_main_ram_init"] = get_mem_data(args.ram_init,
+                data_width = conf_soc.bus.data_width,
+                endianness = conf_soc.cpu.endianness,
+                offset     = conf_soc.mem_map["main_ram"]
+            )
+            ram_boot_address = get_boot_address(args.ram_init)
+    elif args.with_sdram:
+        assert args.ram_init is None
+        soc_kwargs["sdram_module"]     = args.sdram_module
+        soc_kwargs["sdram_data_width"] = int(args.sdram_data_width)
+        soc_kwargs["sdram_verbosity"]  = int(args.sdram_verbosity)
+        if args.sdram_from_spd_dump:
+            soc_kwargs["sdram_spd_data"] = parse_spd_hexdump(args.sdram_from_spd_dump)
+        if args.sdram_init is not None:
+            soc_kwargs["sdram_init"] = get_mem_data(args.sdram_init,
+                data_width = conf_soc.bus.data_width,
+                endianness = conf_soc.cpu.endianness,
+                offset     = conf_soc.mem_map["main_ram"]
+            )
+            ram_boot_address = get_boot_address(args.sdram_init)
+
+
+    # SoC ------------------------------------------------------------------------------------------
+    soc = SimSoC(
+        with_sdram             = args.with_sdram,
+        with_sdram_bist        = args.with_sdram_bist,
+        sim_debug              = args.sim_debug,
+        trace_reset_on         = int(float(args.trace_start)) > 0 or int(float(args.trace_end)) > 0,
+        with_adder             = args.with_adder, # Adicionado para o AdderWBTop
+        **soc_kwargs)
+    if ram_boot_address is not None:
+        if ram_boot_address == 0:
+            ram_boot_address = conf_soc.mem_map["main_ram"]
+        soc.add_constant("ROM_BOOT_ADDRESS", ram_boot_address)
+    # Build/Run ------------------------------------------------------------------------------------
+    def pre_run_callback(vns):
+        if args.trace:
+            generate_gtkw_savefile(builder, vns, args.trace_fst)
+
+    builder = Builder(soc, **parser.builder_argdict)
+    builder.build(
+        sim_config       = sim_config,
+        interactive      = not args.non_interactive,
+        **parser.toolchain_argdict,
+    )
+
+if __name__ == "__main__":
+    main()
+
+

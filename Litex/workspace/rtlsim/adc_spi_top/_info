@@ -1,0 +1,385 @@
+m255
+K4
+z2
+Z0 !s12c _opt2
+Z1 !s99 nomlopt
+Z2 !s12c _opt1
+R1
+R0
+R1
+R2
+R1
+!s12c _opt
+R1
+!s11f vlog 2023.3 2023.07, Jul 17 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z3 dC:/Users/thiag/OneDrive/Documentos/VIRTUS/CI_Expert/Hands_on/Litex/workspace/rtlsim
+T_opt
+!s110 1793902657
+V<DB9gn?S7fjPZ1=;n3UWD3
+Z4 04 14 4 work adc_spi_top_tb fast 0
+=1-b025aa80eb84-6aecc840-3b7-23a8
+R1
+Z5 !s12b OEM100
+Z6 !s124 OEM10U15 
+o-quiet -auto_acc_if_foreign -work work +acc
+Z7 tCvgOpt 0
+n@_opt
+Z8 OL;O;2023.3;77
+R3
+T_opt1
+!s110 1793904483
+VdNgTEG<][_Uj^L@YG7zn61
+R4
+=1-b025aa80eb84-6aeccf63-14-5488
+R1
+R5
+R6
+o-quiet -auto_acc_if_foreign -work work -G CRC_HEADER_EN=0 +acc
+R7
+n@_opt1
+R8
+R3
+T_opt2
+!s110 1793904485
+V;oSioblPB5U2?BjQ]RFk71
+R4
+=1-b025aa80eb84-6aeccf65-21c-3728
+R1
+R5
+R6
+o-quiet -auto_acc_if_foreign -work work -G CRC_HEADER_EN=1 +acc
+R7
+n@_opt2
+R8
+R3
+vadc
+Z9 2C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_analog.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_digital.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_reg_bank.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_wb_slave_top.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\spi_wb_reset_sync.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\wb_slave.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_crc8_ccitt.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_slave_core.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_wb_bridge.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\wb_master_ctrl.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\src\adc_spi_top.sv
+Z10 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z11 !s110 1793906049
+!i10b 1
+!s100 _`4[?J3S^j9_TIc:KJmzD3
+I>`I?K2=P?`3z7hSH8?@`<0
+S1
+R3
+Z12 w1792692663
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc.sv
+!i122 6
+L0 11 38
+Z13 VDg1SIo80bB@j0V0VzS_@n1
+Z14 OL;L;2023.3;77
+r1
+!s85 0
+31
+Z15 !s108 1793906049.000000
+Z16 !s107 C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\src\adc_spi_top.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\wb_master_ctrl.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_wb_bridge.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_slave_core.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_crc8_ccitt.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\wb_slave.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\spi_wb_reset_sync.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_wb_slave_top.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_reg_bank.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_digital.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_analog.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc.sv|
+Z17 !s90 -sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_analog.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_digital.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_reg_bank.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_wb_slave_top.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\spi_wb_reset_sync.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\wb_slave.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_crc8_ccitt.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_slave_core.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_wb_bridge.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\wb_master_ctrl.sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\src\adc_spi_top.sv|
+!i113 0
+Z18 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R7
+vadc_analog
+R9
+R10
+R11
+!i10b 1
+!s100 bB0g8da4::9QlI?KaZfGd3
+I;UJ[1nYYd?5b`hSWUPjKW0
+S1
+R3
+R12
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_analog.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_analog.sv
+!i122 6
+L0 9 30
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vadc_digital
+R9
+R10
+R11
+!i10b 1
+!s100 OVY0CH5Wo<OKO5cYJMeX:0
+I=Mf4Z`Yg9V9I?UcjeQKNZ0
+S1
+R3
+Z19 w1792692665
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_digital.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_digital.sv
+!i122 6
+L0 10 44
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vadc_reg_bank
+R9
+R10
+R11
+!i10b 1
+!s100 ;?z>7:9zK83WQDZd;Jgfc3
+I`MD;h]zkkQRgE[<E^D=hV2
+S1
+R3
+R12
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_reg_bank.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_reg_bank.sv
+!i122 6
+L0 19 151
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vadc_spi_top
+R9
+R10
+R11
+!i10b 1
+!s100 E=AJ2KT<;`3ZYV[[3:Bih2
+IHA6ILfk>WH2e3cSb?QRa12
+S1
+R3
+w1793902705
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\src\adc_spi_top.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\src\adc_spi_top.sv
+!i122 6
+L0 15 117
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vadc_spi_top_tb
+2C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\tb\adc_spi_top_tb.sv
+R10
+!s110 1793906050
+!i10b 1
+!s100 VeJ8JAN[ScI:_oQ:dd7A81
+IMVf]MG_F>`fSf<LjCdcDz0
+S1
+R3
+w1793905587
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\tb\adc_spi_top_tb.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\tb\adc_spi_top_tb.sv
+!i122 7
+L0 27 674
+R13
+R14
+r1
+!s85 0
+31
+R15
+!s107 C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\tb\adc_spi_top_tb.sv|
+!s90 -sv|C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\Litex\tb\adc_spi_top_tb.sv|
+!i113 0
+R18
+R7
+vadc_wb_slave_top
+R9
+R10
+R11
+!i10b 1
+!s100 ?R4n;U0zoIkmHLnd1Ne9J2
+ISA_FaWLg5>[XRfZfRLSVO0
+S1
+R3
+w1792694260
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_wb_slave_top.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\adc_wb_slave_top.sv
+!i122 6
+L0 13 152
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vspi_crc8_ccitt
+R9
+R10
+R11
+!i10b 1
+!s100 R5B4hEHR]mFA[X1J<;CJ_1
+I6=@RNA:7Zf[i6hIORXolm3
+S1
+R3
+w1792688943
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_crc8_ccitt.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_crc8_ccitt.sv
+!i122 6
+L0 11 71
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vspi_slave_core
+R9
+R10
+R11
+!i10b 1
+!s100 KoD?Bg^>3aQL?`WI[d12m1
+IXBP<^h5;LdPS_OFMiR6DY1
+S1
+R3
+Z20 w1793903080
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_slave_core.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_slave_core.sv
+!i122 6
+L0 17 356
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vspi_wb_bridge
+R9
+R10
+R11
+!i10b 1
+!s100 ^HWAm;RIn<ES4f[8H;g`_2
+Iik1<hZL2[BaD??`PQV7Fn0
+S1
+R3
+R20
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_wb_bridge.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\spi_wb_bridge.sv
+!i122 6
+L0 12 159
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vspi_wb_reset_sync
+R9
+R10
+R11
+!i10b 1
+!s100 7SNFLlc7U3eDFBL@_aDm>2
+I1a:BV2@3EXf2a1I?d1QP^0
+S1
+R3
+R12
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\spi_wb_reset_sync.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\spi_wb_reset_sync.sv
+!i122 6
+L0 10 22
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vwb_master_ctrl
+R9
+R10
+R11
+!i10b 1
+!s100 K1Oz:1T_6469D]3h^DSA:3
+Im>>P0UP]4;d0ncS9bih?_3
+S1
+R3
+R20
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\wb_master_ctrl.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\spi_slave_wb_bridge\rtl\src\wb_master_ctrl.sv
+!i122 6
+L0 11 124
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
+vwb_slave
+R9
+R10
+R11
+!i10b 1
+!s100 FUIa:6IEm?e8W5<L1o?UP0
+I4=e?XYeoIHH5M2`8OFN`g1
+S1
+R3
+R19
+8C:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\wb_slave.sv
+FC:\Users\thiag\OneDrive\Documentos\VIRTUS\CI_Expert\Hands_on\frontend\adc_wb_slave_regbank\rtl\src\wb_slave.sv
+!i122 6
+L0 14 144
+R13
+R14
+r1
+!s85 0
+31
+R15
+R16
+R17
+!i113 0
+R18
+R7
